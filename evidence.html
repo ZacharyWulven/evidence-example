@@ -1,0 +1,68 @@
+<html>  
+    <head>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.18.0/axios.min.js"></script>
+        <title>
+           Evidence Example
+        </title>
+    </head>
+    <body>
+        <div id="vue_things">
+            value: <input type="text" v-model="evidence">
+            <button type="button" class="btn btn-success" v-on:click="new_evidence(evidence)">evidence to chain!</button>
+            <br>
+            key: <input type="text" v-model="key">
+            <button type="button" class="btn btn-success" v-on:click="get_evidence(key)">get evidence!</button>
+            <br>
+            evidence on chain: {{evidence_on_chain}}
+            <br>
+            tx id: {{tx_id}}
+        </div>
+        
+        <script>
+            var vue_things=new Vue({
+                el:'#vue_things',
+                data:{
+                    evidence: new String(),
+                    key: new String(),
+                    evidence_on_chain: new String(),
+                    tx_id: new String()
+                },
+                methods:
+                {
+                    new_evidence:function(value){
+                        axios({
+                            method:'post',
+                            url:'http://127.0.0.1:5002/WeBASE-Front/trans/handle',
+                            data:
+                            {
+                                    "user":"0x71bfe7674c15b467da489aedca5b6a941e0e64bb",
+                                    "contractName":"EvidenceFactory",
+                                    "contractAddress":"0x1b3c41faa8be8f7893c94aeb84124f1ac797384b",
+                                    "funcName":"newEvidence",
+                                    "funcParam":[value],
+                                    "groupId":"1",
+                                    "contractAbi":[{"constant":false,"inputs":[{"name":"addr","type":"address"}],"name":"addSignatures","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[{"name":"index","type":"uint256"}],"name":"getSigner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"addr","type":"address"}],"name":"getEvidence","outputs":[{"name":"","type":"string"},{"name":"","type":"address[]"},{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"addr","type":"address"}],"name":"verify","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"getSigners","outputs":[{"name":"","type":"address[]"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"evi","type":"string"}],"name":"newEvidence","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getSignersSize","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"inputs":[{"name":"evidenceSigners","type":"address[]"}],"payable":false,"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":false,"name":"addr","type":"address"}],"name":"newEvidenceEvent","type":"event"}]
+                            },
+                            headers:
+                            {
+                                'Content-Type': 'application/json',
+                            }                             
+                        })
+                        .then(function(response){
+                            vue_things.tx_id = response.data.transactionHash 
+                            vue_things.key = response.data.logs[0].address
+                            console.log(response)
+
+                        })
+                        .catch(function(error){
+
+                        })
+                    }
+                }
+            })
+          vue_things.new_evidence("welcome to block chain");
+          
+        </script>
+    </body>
+</html>
